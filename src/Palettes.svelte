@@ -64,16 +64,14 @@
     $scaleParams.swatchIndex = swatchIndex;
   }
 
-  function getSwatchStepId(palette, swatchIndex) {
-    return palette.length <= 9
-      ? (swatchIndex + 1) * 100
-      : (swatchIndex + 1) * 10;
+  function getSwatchStepId(scale, swatchIndex) {
+    return scale.length <= 9 ? (swatchIndex + 1) * 100 : (swatchIndex + 1) * 10;
   }
 
-  function getTextColors(palette) {
+  function getTextColors(scale) {
     return {
-      light: palette[0].hex,
-      dark: palette[palette.length - 1].hex,
+      light: scale[0].hex,
+      dark: scale[scale.length - 1].hex,
     };
   }
 </script>
@@ -96,8 +94,8 @@
         <Swatch
           fillHeight
           hexCode="{color.hex}"
-          stepId="{getSwatchStepId(palette, i)}"
-          textColors="{getTextColors(palette)}"
+          stepId="{getSwatchStepId(scale, i)}"
+          textColors="{getTextColors(scale)}"
           on:click="{(e) => {
             e.preventDefault();
             setCurrentIndices(j, i);
