@@ -70,7 +70,8 @@
   let blackContrastAaLarge;
   let textColor;
 
-  $: isLight = chroma(hexCode).luminance() > 0.55;
+  //$: isLight = chroma(hexCode).luminance() > 0.55;
+
   $: textColor = isLight ? textColors.dark : textColors.light;
   $: whiteContrast =
     $settings.overlayContrast && chroma.contrast("#fff", hexCode);
@@ -82,6 +83,8 @@
   $: whiteContrastAaLarge = whiteContrast >= 3;
   $: blackContrastAa = blackContrast >= 4.5;
   $: blackContrastAaLarge = blackContrast >= 3;
+
+  $: isLight = blackContrastAa;
 </script>
 
 <div
