@@ -63,6 +63,19 @@
     $paletteParams.paletteIndex = paletteIndex;
     $paletteParams.swatchIndex = swatchIndex;
   }
+
+  function getSwatchStepId(palette, swatchIndex) {
+    return palette.length <= 9
+      ? (swatchIndex + 1) * 100
+      : (swatchIndex + 1) * 10;
+  }
+
+  function getTextColors(palette) {
+    return {
+      light: palette[0].hex,
+      dark: palette[palette.length - 1].hex,
+    };
+  }
 </script>
 
 <div
@@ -83,6 +96,8 @@
         <Swatch
           fillHeight
           hexCode="{color.hex}"
+          stepId="{getSwatchStepId(palette, i)}"
+          textColors="{getTextColors(palette)}"
           on:click="{(e) => {
             e.preventDefault();
             setCurrentIndices(j, i);
