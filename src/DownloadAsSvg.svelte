@@ -17,7 +17,7 @@
 <script>
   export let data = null;
 
-  let filename = "Palette from ColorColor.svg";
+  let filename = "Scale from ColorColor.svg";
 
   $: base64EncodedData = data ? window.btoa(data) : null;
 </script>

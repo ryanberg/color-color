@@ -12,7 +12,7 @@ const defaults = {
   steps: 9,
   saturationRate: 130,
 };
-const maxNumOfPalettes = 6;
+const maxNumOfScales = 6;
 const urlState = getStateFromUrl();
 
 export const config = readable({
@@ -41,15 +41,15 @@ export const settings = writable(
   )
 );
 
-function createPaletteParams() {
+function createScaleParams() {
   const { subscribe, set, update } = writable(
     Object.assign(
       {},
       {
         steps: defaults.steps,
-        paletteIndex: 0,
+        scaleIndex: 0,
         swatchIndex: Math.floor(defaults.steps / 2),
-        maxNumOfPalettes,
+        maxNumOfScales,
         params: [
           {
             hue: { start: 230, end: 254, ease: "quadIn" },
@@ -83,7 +83,7 @@ function createPaletteParams() {
           },
         ],
       },
-      urlState.paletteParams
+      urlState.scaleParams
     )
   );
 
@@ -91,8 +91,8 @@ function createPaletteParams() {
     update((pp) => {
       if (pp.params.length > 1) {
         pp.params = pp.params.filter((_, i) => i !== index);
-        if (pp.paletteIndex >= index) {
-          pp.paletteIndex = Math.max(pp.paletteIndex - 1, 0);
+        if (pp.scaleIndex >= index) {
+          pp.scaleIndex = Math.max(pp.scaleIndex - 1, 0);
         }
       }
       return pp;
@@ -100,7 +100,7 @@ function createPaletteParams() {
 
   const add = () =>
     update((pp) => {
-      if (pp.params.length < maxNumOfPalettes) {
+      if (pp.params.length < maxNumOfScales) {
         const hueRange = 20;
         const hue = randomInt(0, 360 - hueRange);
 
@@ -115,7 +115,7 @@ function createPaletteParams() {
           lig: { start: 100, end: 5, ease: "quadOut" },
         };
 
-        pp.paletteIndex = pp.params.length;
+        pp.scaleIndex = pp.params.length;
         pp.params = [...pp.params, param];
       }
 
@@ -134,16 +134,16 @@ function createPaletteParams() {
 
   return { subscribe, set: checkAndSet, update, removeByIndex, add };
 }
-export const paletteParams = createPaletteParams();
+export const scaleParams = createScaleParams();
 
 const easeSteps = (easeFn, currentStep, totalStep) =>
   easeFn(currentStep / totalStep) * currentStep;
 
-export const palettes = derived(
-  [paletteParams, settings],
-  ([$paletteParams, $settings]) => {
-    const steps = $paletteParams.steps;
-    return $paletteParams.params.map((pal) => {
+export const scales = derived(
+  [scaleParams, settings],
+  ([$scaleParams, $settings]) => {
+    const steps = $scaleParams.steps;
+    return $scaleParams.params.map((pal) => {
       const { hue, sat, lig } = pal;
       const hUnit = (hue.end - hue.start) / steps;
       const sUnit = (sat.end - sat.start) / steps;
@@ -173,14 +173,14 @@ export const palettes = derived(
   }
 );
 
-export const swatchesGroupedById = derived([palettes], ([$palettes]) => {
-  const groupedBySwatchId = $palettes
-    .map((palette, i) => {
-      return palette.map((swatch) => {
+export const swatchesGroupedById = derived([scales], ([$scales]) => {
+  const groupedBySwatchId = $scales
+    .map((scale, i) => {
+      return scale.map((swatch) => {
         const { id: swatchId, ...rest } = swatch;
         return {
           ...rest,
-          paletteIndex: i,
+          scaleIndex: i,
           swatchId,
         };
       });
@@ -214,14 +214,14 @@ export const refColors = derived(settings, ($settings) => {
 });
 
 export const nearestRefColors = derived(
-  [refColors, palettes],
-  ([$refColors, $palettes]) => {
+  [refColors, scales],
+  ([$refColors, $scales]) => {
     const refs = $refColors.reduce((acc, { hex }) => {
       return { ...acc, [hex]: {} };
     }, {});
 
     $refColors.forEach(({ hex: rc }) => {
-      $palettes.forEach((p) =>
+      $scales.forEach((p) =>
         p.forEach((swatch) => {
           const { hex } = swatch;
           const dist = chroma.distance(rc, hex, "rgb");
@@ -247,27 +247,27 @@ export const nearestRefColors = derived(
 );
 
 export const shareState = derived(
-  [settings, paletteParams, palettes],
-  ([$settings, $paletteParams, $palettes]) => {
+  [settings, scaleParams, scales],
+  ([$settings, $scaleParams, $scales]) => {
     const state = {
-      paletteParams: $paletteParams,
+      scaleParams: $scaleParams,
       settings: $settings,
     };
     const encodedState = jsoun.encode(state);
 
-    const paletteJson = $palettes.reduce((pacc, p, i) => {
-      const palette = p.reduce((acc, s) => {
+    const scaleJson = $scales.reduce((pacc, p, i) => {
+      const scale = p.reduce((acc, s) => {
         return { ...acc, [s.id]: s.hex };
       }, {});
-      return { ...pacc, [`color-${i + 1}`]: palette };
+      return { ...pacc, [`color-${i + 1}`]: scale };
     }, {});
 
-    const paletteSVG = jsonToSvg(paletteJson);
+    const scaleSVG = jsonToSvg(scaleJson);
 
     return {
       url: `${getBaseUrl()}#${encodedState}`,
-      json: JSON.stringify(paletteJson, null, 2),
-      svg: paletteSVG,
+      json: JSON.stringify(scaleJson, null, 2),
+      svg: scaleSVG,
     };
   }
 );

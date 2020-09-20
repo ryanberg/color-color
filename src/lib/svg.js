@@ -39,7 +39,7 @@ export const jsonToSvg = (
   const svg = `<svg width="${canvasWidth}px" height="${canvasHeight}px" viewBox="0 0 ${canvasWidth} ${canvasHeight}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <title>Colors</title>
     <desc>Created with color-color</desc>
-    <g id="palette" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+    <g id="scale" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
       ${generateGroups(json, swatchWidth, swatchHeight, padding)}
     </g>
 </svg>

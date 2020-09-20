@@ -1,5 +1,5 @@
 <script>
-  import { paletteParams } from "./store";
+  import { scaleParams } from "./store";
   import ControlGroup from "./ControlGroup.svelte";
   import RangeField from "./RangeField.svelte";
 </script>
@@ -8,7 +8,7 @@
   <RangeField
     id="steps-range"
     labelledby="steps-title"
-    bind:value="{$paletteParams.steps}"
+    bind:value="{$scaleParams.steps}"
     min="3"
     max="21" />
 </ControlGroup>

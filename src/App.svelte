@@ -5,8 +5,8 @@
     grid-template-rows: max-content 1fr;
     grid-template-columns: repeat(2, 60vw) min-content;
     grid-template-areas:
-      "header controls   palettes"
-      "graphs controls palettes";
+      "header controls   scales"
+      "graphs controls scales";
     scroll-snap-type: x proximity;
     overflow-x: auto;
     overflow-y: hidden;
@@ -16,8 +16,8 @@
     @screen md {
       grid-template-columns: minmax(16rem, 1fr) 4fr minmax(16rem, 1fr);
       grid-template-areas:
-        "header   palettes  graphs"
-        "controls palettes  graphs";
+        "header   scales  graphs"
+        "controls scales  graphs";
     }
   }
 
@@ -37,8 +37,8 @@
   import "./global.css";
   import ColorSpaceSelector from "./ColorSpaceSelector.svelte";
   import OverlayKnobs from "./OverlayKnobs.svelte";
-  import PaletteKnobs from "./PaletteKnobs.svelte";
-  import Palettes from "./Palettes.svelte";
+  import ScaleKnobs from "./ScaleKnobs.svelte";
+  import Scales from "./Scales.svelte";
   import Plots from "./Plots.svelte";
   import ReferenceColorFieldGroup from "./ReferenceColorFieldGroup.svelte";
   import ShareDialog from "./ShareDialog.svelte";
@@ -54,13 +54,13 @@
   <SiteHeader gridArea="header" />
   <div class="controls">
     <StepsKnob />
-    <PaletteKnobs />
+    <ScaleKnobs />
     <ReferenceColorFieldGroup />
     <ColorSpaceSelector />
     <OverlayKnobs />
     <SiteFooter />
   </div>
-  <Palettes gridArea="palettes" />
+  <Scales gridArea="scales" />
   <Plots gridArea="graphs" />
 </main>
 

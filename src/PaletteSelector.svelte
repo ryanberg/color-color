@@ -33,20 +33,20 @@
 </style>
 
 <script>
-  import { paletteParams } from "./store";
-  let paletteIndex = [];
-  $: paletteIndex = $paletteParams.params.map((_, i) => i);
+  import { scaleParams } from "./store";
+  let scaleIndex = [];
+  $: scaleIndex = $scaleParams.params.map((_, i) => i);
 </script>
 
 <ul class="index">
-  {#each paletteIndex as pi, i (i)}
+  {#each scaleIndex as pi, i (i)}
     <li>
       <a
         class="index-marker"
-        class:index-marker--active="{$paletteParams.paletteIndex === i}"
+        class:index-marker--active="{$scaleParams.scaleIndex === i}"
         href="#{i + 1}"
         on:click|preventDefault="{() => {
-          $paletteParams.paletteIndex = i;
+          $scaleParams.scaleIndex = i;
         }}">
         {i + 1}
       </a>

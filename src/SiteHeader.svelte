@@ -49,11 +49,11 @@
 </style>
 
 <script>
-  import { paletteParams, shareDialog } from "./store";
+  import { scaleParams, shareDialog } from "./store";
   export let gridArea;
 
   $: canAddMoreColors =
-    $paletteParams.params.length < $paletteParams.maxNumOfPalettes;
+    $scaleParams.params.length < $scaleParams.maxNumOfScales;
 </script>
 
 <header class="header" style="--grid-area:{gridArea};">
@@ -67,9 +67,7 @@
       }}">
       Share
     </button>
-    <button
-      on:click="{() => paletteParams.add()}"
-      disabled="{!canAddMoreColors}">
+    <button on:click="{() => scaleParams.add()}" disabled="{!canAddMoreColors}">
       Add colors
     </button>
   </div>

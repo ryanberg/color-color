@@ -22,7 +22,7 @@
     @apply text-2xl font-bold;
   }
 
-  .palette-selector {
+  .scale-selector {
     @apply -mt-1;
   }
 </style>
@@ -31,25 +31,20 @@
   import chroma from "chroma-js";
   import ColorsPlot from "./ColorsPlot.svelte";
   import ControlGroup from "./ControlGroup.svelte";
-  import PaletteSelector from "./PaletteSelector.svelte";
-  import {
-    paletteParams,
-    swatchesGroupedById,
-    palettes,
-    config,
-  } from "./store";
+  import ScaleSelector from "./ScaleSelector.svelte";
+  import { scaleParams, swatchesGroupedById, scales, config } from "./store";
 
   export let gridArea;
 
-  let currentPalette = [];
+  let currentScale = [];
   let currentSwatchId = "";
   let currentSwatchSet = [];
 
-  $: currentPalette = $palettes[$paletteParams.paletteIndex];
+  $: currentScale = $scales[$scaleParams.scaleIndex];
 
   $: currentSwatchId =
-    $swatchesGroupedById[$paletteParams.swatchIndex][0].swatchId;
-  $: currentSwatchSet = $swatchesGroupedById[$paletteParams.swatchIndex] || [];
+    $swatchesGroupedById[$scaleParams.swatchIndex][0].swatchId;
+  $: currentSwatchSet = $swatchesGroupedById[$scaleParams.swatchIndex] || [];
 
   const getChroma = (hex) => {
     const [, c] = chroma(hex).lch();
@@ -59,8 +54,8 @@
 
 <div class="plots" style="--grid-area: {gridArea};">
   <div class="plot-group">
-    <div class="palette-selector">
-      <PaletteSelector />
+    <div class="scale-selector">
+      <ScaleSelector />
     </div>
 
     <ControlGroup>
@@ -68,7 +63,7 @@
         title="Luminance"
         subtitle="How bright is it?"
         yDomain="{[0, 1]}"
-        data="{currentPalette.map((s) => ({
+        data="{currentScale.map((s) => ({
           x: s.id,
           y: chroma(s.hex).luminance(),
           hex: s.hex,
@@ -79,7 +74,7 @@
         title="Chroma"
         subtitle="How colorful is it?"
         yDomain="{[0, 150]}"
-        data="{currentPalette.map((s) => ({
+        data="{currentScale.map((s) => ({
           x: s.id,
           y: getChroma(s.hex),
           hex: s.hex,
@@ -91,7 +86,7 @@
         subtitle="What color is it?"
         yDomain="{$config.limits.hue}"
         yTickDivisions="{6}"
-        data="{currentPalette.map((s) => ({ x: s.id, y: s.h, hex: s.hex }))}" />
+        data="{currentScale.map((s) => ({ x: s.id, y: s.h, hex: s.hex }))}" />
     </ControlGroup>
   </div>
   <div class="plot-group">
@@ -102,7 +97,7 @@
         subtitle="How bright is it?"
         yDomain="{[0, 1]}"
         data="{currentSwatchSet.map((s) => ({
-          x: (s.paletteIndex + 1).toString(),
+          x: (s.scaleIndex + 1).toString(),
           y: chroma(s.hex).luminance(),
           hex: s.hex,
         }))}" />
@@ -113,7 +108,7 @@
         subtitle="How colorful is it?"
         yDomain="{[0, 150]}"
         data="{currentSwatchSet.map((s) => ({
-          x: (s.paletteIndex + 1).toString(),
+          x: (s.scaleIndex + 1).toString(),
           y: getChroma(s.hex),
           hex: s.hex,
         }))}" />
@@ -126,7 +121,7 @@
         yDomain="{$config.limits.hue}"
         yTickDivisions="{6}"
         data="{currentSwatchSet.map((s) => ({
-          x: (s.paletteIndex + 1).toString(),
+          x: (s.scaleIndex + 1).toString(),
           y: s.h,
           hex: s.hex,
         }))}" />

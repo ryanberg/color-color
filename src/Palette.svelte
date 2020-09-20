@@ -1,5 +1,5 @@
 <style>
-  .palette {
+  .scale {
     @apply flex flex-col;
   }
 
@@ -62,7 +62,7 @@
   }
 </script>
 
-<div class="palette">
+<div class="scale">
   <div class="header">
     <button
       class="button-activate"

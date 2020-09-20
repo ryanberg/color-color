@@ -9,7 +9,7 @@ export const getBaseUrl = () => {
 };
 
 const cleanseData = (data) => {
-  const params = data.paletteParams && data.paletteParams.params;
+  const params = data.scaleParams && data.scaleParams.params;
   const cleanedParams = params.map((p) => {
     const sat = p.sat;
     if (sat) {
@@ -27,8 +27,8 @@ const cleanseData = (data) => {
 
   return {
     ...data,
-    paletteParams: {
-      ...data.paletteParams,
+    scaleParams: {
+      ...data.scaleParams,
       params: cleanedParams,
     },
   };

@@ -1,5 +1,5 @@
 <style>
-  .palettes {
+  .scales {
     @apply grid overflow-y-auto overflow-x-hidden;
     @apply border-4 border-l-0 border-gray-900;
     grid-template-columns: repeat(var(--columns), 1fr) max-content;
@@ -47,39 +47,39 @@
 </style>
 
 <script>
-  import { paletteParams, palettes } from "./store";
-  import Palette from "./Palette.svelte";
+  import { scaleParams, scales } from "./store";
+  import Scale from "./Scale.svelte";
   import Swatch from "./Swatch.svelte";
 
   export let gridArea;
 
   function confirmAndDelete(id) {
     if (window.confirm("Are you sure you want to delete?")) {
-      paletteParams.removeByIndex(id);
+      scaleParams.removeByIndex(id);
     }
   }
 
-  function setCurrentIndices(paletteIndex, swatchIndex) {
-    $paletteParams.paletteIndex = paletteIndex;
-    $paletteParams.swatchIndex = swatchIndex;
+  function setCurrentIndices(scaleIndex, swatchIndex) {
+    $scaleParams.scaleIndex = scaleIndex;
+    $scaleParams.swatchIndex = swatchIndex;
   }
 </script>
 
 <div
-  class="palettes"
-  style="--grid-area: {gridArea}; --columns:{$palettes.length};">
-  {#each $palettes as palette, j (j)}
-    <Palette
-      active="{$paletteParams.paletteIndex === j}"
+  class="scales"
+  style="--grid-area: {gridArea}; --columns:{$scales.length};">
+  {#each $scales as scale, j (j)}
+    <Scale
+      active="{$scaleParams.scaleIndex === j}"
       index="{j + 1}"
       on:clickActivate="{() => {
-        $paletteParams.paletteIndex = j;
+        $scaleParams.scaleIndex = j;
       }}"
       on:clickRemove="{() => {
         confirmAndDelete(j);
       }}"
-      removable="{$palettes.length > 1}">
-      {#each palette as color, i (i)}
+      removable="{$scales.length > 1}">
+      {#each scale as color, i (i)}
         <Swatch
           fillHeight
           hexCode="{color.hex}"
@@ -88,18 +88,18 @@
             setCurrentIndices(j, i);
           }}" />
       {/each}
-    </Palette>
+    </Scale>
   {/each}
   <div class="ids">
     <div class="ids__header">&nbsp;</div>
-    {#each $palettes[0] as color, i (i)}
+    {#each $scales[0] as color, i (i)}
       <button
         on:click="{() => {
-          $paletteParams.swatchIndex = i;
+          $scaleParams.swatchIndex = i;
         }}">
         <span
           class="button-label"
-          class:button-label--active="{$paletteParams.swatchIndex === i}">
+          class:button-label--active="{$scaleParams.swatchIndex === i}">
           {color.id}
         </span>
       </button>
