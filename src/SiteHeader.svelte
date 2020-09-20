@@ -68,7 +68,7 @@
       Share
     </button>
     <button on:click="{() => scaleParams.add()}" disabled="{!canAddMoreColors}">
-      Add colors
+      Add scale
     </button>
   </div>
 </header>
