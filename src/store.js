@@ -32,7 +32,7 @@ export const settings = writable(
   Object.assign(
     {},
     {
-      overlayContrast: false,
+      overlayContrast: true,
       overlayHex: true,
       refColorsRaw: "",
       colorSpace: "hsluv",
