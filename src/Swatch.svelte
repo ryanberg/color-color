@@ -2,6 +2,12 @@
   .swatch {
     @apply relative flex flex-wrap justify-end items-start py-4 text-gray-300;
   }
+  .swatch > div > div {
+    @apply opacity-75;
+  }
+  .swatch:hover > div > div {
+    @apply opacity-100;
+  }
 
   .click-area {
     color: inherit;
