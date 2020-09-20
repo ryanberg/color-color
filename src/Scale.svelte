@@ -50,6 +50,7 @@
   export let active = false;
   export let removable = true;
   export let index;
+  export let name;
 
   const dispatch = createEventDispatcher();
 
@@ -71,6 +72,7 @@
       title="{active ? 'Active' : 'Activate'}">
       <span class="status">{index}</span>
     </button>
+    <input id="" name="" bind:value="{name}" class="bg-gray-200" />
     {#if removable}
       <button class="button-remove" on:click="{onRemove}" title="Remove">
         <span class="sr-only">Remove</span>

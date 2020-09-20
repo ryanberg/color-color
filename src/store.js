@@ -7,6 +7,7 @@ import { getBaseUrl, getStateFromUrl } from "./lib/url";
 import { hslToHex, hexToHsl } from "./lib/colors";
 import { jsonToSvg } from "./lib/svg";
 import { eases as selectedEases } from "./lib/eases";
+import colorNamer from "color-namer/dist/color-namer";
 
 const defaults = {
   steps: 9,
@@ -41,6 +42,30 @@ export const settings = writable(
   )
 );
 
+function slugify(string) {
+  const a =
+    "àáâäæãåāăąçćčđďèéêëēėęěğǵḧîïíīįìłḿñńǹňôöòóœøōõőṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż·/_,:;";
+  const b =
+    "aaaaaaaaaacccddeeeeeeeegghiiiiiilmnnnnoooooooooprrsssssttuuuuuuuuuwxyyzzz------";
+  const p = new RegExp(a.split("").join("|"), "g");
+
+  return string
+    .toString()
+    .toLowerCase()
+    .replace(/\s+/g, "-") // Replace spaces with -
+    .replace(p, (c) => b.charAt(a.indexOf(c))) // Replace special characters
+    .replace(/&/g, "-and-") // Replace & with 'and'
+    .replace(/[^\w-]+/g, "") // Remove all non-word characters
+    .replace(/--+/g, "-") // Replace multiple - with single -
+    .replace(/^-+/, "") // Trim - from start of text
+    .replace(/-+$/, ""); // Trim - from end of text
+}
+
+function nameHue(hue) {
+  const hex = hslToHex(hue, 100, 75, settings.colorSpace);
+  return slugify(colorNamer(hex, { pick: ["pantone"] }).pantone[0].name);
+}
+
 function createScaleParams() {
   const { subscribe, set, update } = writable(
     Object.assign(
@@ -52,6 +77,7 @@ function createScaleParams() {
         maxNumOfScales,
         params: [
           {
+            name: "blue",
             hue: { start: 230, end: 254, ease: "quadIn" },
             sat: {
               start: 45,
@@ -62,6 +88,7 @@ function createScaleParams() {
             lig: { start: 99, end: 5, ease: "quadOut" },
           },
           {
+            name: "purple",
             hue: { start: 278, end: 290, ease: "quadIn" },
             sat: {
               start: 38,
@@ -72,6 +99,7 @@ function createScaleParams() {
             lig: { start: 99, end: 5, ease: "quadOut" },
           },
           {
+            name: "red",
             hue: { start: 9, end: 16, ease: "quadIn" },
             sat: {
               start: 44,
@@ -105,6 +133,7 @@ function createScaleParams() {
         const hue = randomInt(0, 360 - hueRange);
 
         const param = {
+          name: nameHue(hue),
           hue: { start: hue, end: hue + hueRange, ease: "quadIn" },
           sat: {
             start: 60,
@@ -255,11 +284,14 @@ export const shareState = derived(
     };
     const encodedState = jsoun.encode(state);
 
+    const names = state.scaleParams.params.map((scale) => scale.name);
+
     const scaleJson = $scales.reduce((pacc, p, i) => {
       const scale = p.reduce((acc, s) => {
         return { ...acc, [s.id]: s.hex };
       }, {});
-      return { ...pacc, [`color-${i + 1}`]: scale };
+      //return { ...pacc, [`color-${i + 1}`]: scale };
+      return { ...pacc, [`color-${names[i]}`]: scale };
     }, {});
 
     const scaleSVG = jsonToSvg(scaleJson);

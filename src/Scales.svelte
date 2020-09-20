@@ -81,6 +81,7 @@
   style="--grid-area: {gridArea}; --columns:{$scales.length};">
   {#each $scales as scale, j (j)}
     <Scale
+      bind:name="{$scaleParams.params[j].name}"
       active="{$scaleParams.scaleIndex === j}"
       index="{j + 1}"
       on:clickActivate="{() => {
