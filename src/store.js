@@ -13,7 +13,7 @@ const defaults = {
   steps: 9,
   saturationRate: 130,
 };
-const maxNumOfScales = 6;
+const maxNumOfScales = 16;
 const urlState = getStateFromUrl();
 
 export const config = readable({
