@@ -28,6 +28,8 @@ export const config = readable({
 });
 
 export const shareDialog = writable(false);
+export const addDialog = writable(false);
+export const hexToScale = writable("");
 
 export const settings = writable(
   Object.assign(
@@ -126,18 +128,33 @@ function createScaleParams() {
       return pp;
     });
 
-  const add = () =>
+  const add = (hex) =>
     update((pp) => {
       if (pp.params.length < maxNumOfScales) {
-        const hueRange = 20;
-        const hue = randomInt(0, 360 - hueRange);
+        let hueRange = 20;
+        let hue = 100;
+        let satStart = 60;
+        let satEnd = 100;
+
+        if (typeof hex === "string") {
+          // New color from hex
+          const hsluvFromHex = hexToHsl(hex);
+          hue = hsluvFromHex[0];
+          hueRange = 0;
+          satStart = hsluvFromHex[1];
+          satEnd = hsluvFromHex[1];
+        } else {
+          // Random new color
+          hueRange = 20;
+          hue = randomInt(0, 360 - hueRange);
+        }
 
         const param = {
           name: nameHue(hue),
           hue: { start: hue, end: hue + hueRange, ease: "quadIn" },
           sat: {
-            start: 60,
-            end: 100,
+            start: satStart,
+            end: satEnd,
             ease: "quadOut",
             rate: defaults.saturationRate,
           },

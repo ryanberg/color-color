@@ -42,11 +42,12 @@
   import Plots from "./Plots.svelte";
   import ReferenceColorFieldGroup from "./ReferenceColorFieldGroup.svelte";
   import ShareDialog from "./ShareDialog.svelte";
+  import AddDialog from "./AddDialog.svelte";
   import SiteFooter from "./SiteFooter.svelte";
   import SiteHeader from "./SiteHeader.svelte";
   import StepsKnob from "./StepsKnob.svelte";
   import VhProvider from "./VhProvider.svelte";
-  import { shareDialog } from "./store";
+  import { shareDialog, addDialog } from "./store";
 </script>
 
 <VhProvider />
@@ -66,4 +67,8 @@
 
 {#if $shareDialog}
   <ShareDialog />
+{/if}
+
+{#if $addDialog}
+  <AddDialog />
 {/if}

@@ -49,7 +49,7 @@
 </style>
 
 <script>
-  import { scaleParams, shareDialog } from "./store";
+  import { scaleParams, shareDialog, addDialog } from "./store";
   export let gridArea;
 
   $: canAddMoreColors =
@@ -67,8 +67,12 @@
       }}">
       Share
     </button>
-    <button on:click="{() => scaleParams.add()}" disabled="{!canAddMoreColors}">
-      Add scale
+    <button
+      on:click="{() => {
+        $addDialog = !$addDialog;
+      }}"
+      disabled="{!canAddMoreColors}">
+      &plus; Add scale
     </button>
   </div>
 </header>
