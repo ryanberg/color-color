@@ -25,12 +25,22 @@
 </style>
 
 <script>
+  import { onMount } from "svelte";
+
   export let id;
   export let label = null;
   export let legend = null;
   export let labelledby = null;
   export let value;
   export let multiline = false;
+  export let focusOnMount = false;
+  export let ref = null;
+
+  onMount(() => {
+    if (focusOnMount === true) {
+      ref.focus();
+    }
+  });
 </script>
 
 <div class="control">
@@ -42,6 +52,8 @@
       bind:value
       aria-labelledby="{labelledby}"
       on:click
+      bind:this="{ref}"
+      focusOnMount="{focusOnMount}"
       {...$$restProps}></textarea>
   {:else}
     <input
@@ -51,6 +63,8 @@
       bind:value
       aria-labelledby="{labelledby}"
       on:click
+      bind:this="{ref}"
+      focusOnMount="{focusOnMount}"
       {...$$restProps} />
   {/if}
   {#if legend}

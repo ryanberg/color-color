@@ -63,8 +63,8 @@ function slugify(string) {
     .replace(/-+$/, ""); // Trim - from end of text
 }
 
-function nameHue(hue) {
-  const hex = hslToHex(hue, 100, 75, settings.colorSpace);
+function nameHue(hex) {
+  // const hex = hslToHex(hue, 100, 75, settings.colorSpace);
   return slugify(colorNamer(hex, { pick: ["pantone"] }).pantone[0].name);
 }
 
@@ -135,22 +135,29 @@ function createScaleParams() {
         let hue = 100;
         let satStart = 60;
         let satEnd = 100;
+        let colorToName;
 
         if (typeof hex === "string") {
           // New color from hex
+          if (hex.charAt(0) !== "#") {
+            hex = "#" + hex;
+          }
+
           const hsluvFromHex = hexToHsl(hex);
           hue = hsluvFromHex[0];
           hueRange = 0;
           satStart = hsluvFromHex[1];
           satEnd = hsluvFromHex[1];
+          colorToName = hex;
         } else {
           // Random new color
           hueRange = 20;
           hue = randomInt(0, 360 - hueRange);
+          colorToName = hslToHex(hue, 80, 70, settings.colorSpace);
         }
 
         const param = {
-          name: nameHue(hue),
+          name: nameHue(colorToName),
           hue: { start: hue, end: hue + hueRange, ease: "quadIn" },
           sat: {
             start: satStart,

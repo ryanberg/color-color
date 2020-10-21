@@ -47,10 +47,6 @@
   // import TinySwatch from "./TinySwatch.svelte";
   import Icon from "./Icon.svelte";
 
-  // function selectText(e) {
-  //   e.currentTarget.select();
-  // }
-
   function closeModal(e) {
     if (typeof e !== "undefined") {
       e.preventDefault();
@@ -84,11 +80,12 @@
         <ControlGroup title="Hex value" titleId="hex-value">
           <TextField
             bind:value="{$hexToScale}"
+            focusOnMount="{true}"
             labelledby="hex-value"
             id="hex-value-input"
             legend=""
             placeholder=""
-            max-length="7"
+            maxlength="7"
             style="width: 160px" />
         </ControlGroup>
         <button
