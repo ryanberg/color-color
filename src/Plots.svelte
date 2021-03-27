@@ -58,7 +58,7 @@
       <ScaleSelector />
     </div>
 
-    <ControlGroup>
+    <ControlGroup noBorderTop>
       <ColorsPlot
         title="Luminance"
         subtitle="How bright is it?"
@@ -91,7 +91,7 @@
   </div>
   <div class="plot-group">
     <h2>{currentSwatchId}</h2>
-    <ControlGroup>
+    <ControlGroup noBorderTop>
       <ColorsPlot
         title="Luminance"
         subtitle="How bright is it?"

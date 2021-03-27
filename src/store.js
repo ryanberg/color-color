@@ -1,12 +1,15 @@
 import { writable, derived, readable } from "svelte/store";
-import * as eases from "svelte/easing";
 import chroma from "chroma-js";
-import jsoun from "jsoun";
 import { randomInt } from "./lib/math";
-import { getBaseUrl, getStateFromUrl } from "./lib/url";
+import { getStatefulUrl, getStateFromUrl } from "./lib/url";
 import { hslToHex, hexToHsl } from "./lib/colors";
 import { jsonToSvg } from "./lib/svg";
-import { eases as selectedEases } from "./lib/eases";
+import {
+  eases,
+  getBezierEasingByAlias,
+  stringToCubicBezierParams,
+} from "./lib/eases";
+import BezierEasing from "bezier-easing";
 import colorNamer from "color-namer/dist/color-namer";
 
 const defaults = {
@@ -17,7 +20,7 @@ const maxNumOfScales = 16;
 const urlState = getStateFromUrl();
 
 export const config = readable({
-  eases: selectedEases,
+  eases: eases,
   resolution: 0.25,
   limits: {
     hue: [0, 360],
@@ -27,9 +30,31 @@ export const config = readable({
   },
 });
 
-export const shareDialog = writable(false);
 export const addDialog = writable(false);
 export const hexToScale = writable("");
+
+const shareDialogStoreCreator = (config) => {
+  const { subscribe, set, update } = writable(config);
+
+  const openWithTriggerRect = (rect) => {
+    update((state) => {
+      return {
+        ...state,
+        open: true,
+        rect,
+      };
+    });
+  };
+
+  return {
+    subscribe,
+    set,
+    update,
+    openWithTriggerRect,
+  };
+};
+
+export const shareDialog = shareDialogStoreCreator({ open: false });
 
 export const settings = writable(
   Object.assign(
@@ -80,36 +105,44 @@ function createScaleParams() {
         params: [
           {
             name: "blue",
-            hue: { start: 230, end: 254, ease: "quadIn" },
+            hue: {
+              start: 230,
+              end: 254,
+              ease: getBezierEasingByAlias("quadIn"),
+            },
             sat: {
               start: 45,
               end: 100,
-              ease: "quadOut",
+              ease: getBezierEasingByAlias("quadOut"),
               rate: defaults.saturationRate,
             },
-            lig: { start: 99, end: 5, ease: "quadOut" },
+            lig: { start: 99, end: 5, ease: getBezierEasingByAlias("quadOut") },
           },
           {
             name: "purple",
-            hue: { start: 278, end: 290, ease: "quadIn" },
+            hue: {
+              start: 278,
+              end: 290,
+              ease: getBezierEasingByAlias("quadIn"),
+            },
             sat: {
               start: 38,
               end: 89,
-              ease: "quadOut",
+              ease: getBezierEasingByAlias("quadOut"),
               rate: defaults.saturationRate,
             },
-            lig: { start: 99, end: 5, ease: "quadOut" },
+            lig: { start: 99, end: 5, ease: getBezierEasingByAlias("quadOut") },
           },
           {
             name: "red",
-            hue: { start: 9, end: 16, ease: "quadIn" },
+            hue: { start: 9, end: 16, ease: getBezierEasingByAlias("quadIn") },
             sat: {
               start: 44,
               end: 81,
-              ease: "quadOut",
+              ease: getBezierEasingByAlias("quadOut"),
               rate: defaults.saturationRate,
             },
-            lig: { start: 99, end: 5, ease: "quadOut" },
+            lig: { start: 99, end: 5, ease: getBezierEasingByAlias("quadOut") },
           },
         ],
       },
@@ -158,14 +191,18 @@ function createScaleParams() {
 
         const param = {
           name: nameHue(colorToName),
-          hue: { start: hue, end: hue + hueRange, ease: "quadIn" },
+          hue: {
+            start: hue,
+            end: hue + hueRange,
+            ease: getBezierEasingByAlias("quadIn"),
+          },
           sat: {
             start: satStart,
             end: satEnd,
-            ease: "quadOut",
+            ease: getBezierEasingByAlias("quadOut"),
             rate: defaults.saturationRate,
           },
-          lig: { start: 100, end: 5, ease: "quadOut" },
+          lig: { start: 100, end: 5, ease: getBezierEasingByAlias("quadOut") },
         };
 
         pp.scaleIndex = pp.params.length;
@@ -202,13 +239,17 @@ export const scales = derived(
       const sUnit = (sat.end - sat.start) / steps;
       const lUnit = (lig.end - lig.start) / steps;
 
-      const swatches = Array.from({ length: steps }).map((_, i) => {
-        const h = hue.start + easeSteps(eases[hue.ease], i + 1, steps) * hUnit;
+      const hueEaseFn = BezierEasing(...stringToCubicBezierParams(hue.ease));
+      const satEaseFn = BezierEasing(...stringToCubicBezierParams(sat.ease));
+      const ligEaseFn = BezierEasing(...stringToCubicBezierParams(lig.ease));
 
-        let s = sat.start + easeSteps(eases[sat.ease], i + 1, steps) * sUnit;
+      const swatches = Array.from({ length: steps }).map((_, i) => {
+        const h = hue.start + easeSteps(hueEaseFn, i + 1, steps) * hUnit;
+
+        let s = sat.start + easeSteps(satEaseFn, i + 1, steps) * sUnit;
         s = Math.min(100, s * (sat.rate / 100));
 
-        const l = lig.start + easeSteps(eases[lig.ease], i + 1, steps) * lUnit;
+        const l = lig.start + easeSteps(ligEaseFn, i + 1, steps) * lUnit;
         const hex = hslToHex(h, s, l, $settings.colorSpace);
         const id = (i + 1) * (steps > 9 ? 10 : 100);
 
@@ -299,6 +340,14 @@ export const nearestRefColors = derived(
   }
 );
 
+const groupScalesByName = (scales, names) =>
+  scales.reduce((pacc, p, i) => {
+    const scale = p.reduce((acc, s) => {
+      return { ...acc, [s.id]: s.hex };
+    }, {});
+    return { ...pacc, [`color-${names[i]}`]: scale };
+  }, {});
+
 export const shareState = derived(
   [settings, scaleParams, scales],
   ([$settings, $scaleParams, $scales]) => {
@@ -306,22 +355,15 @@ export const shareState = derived(
       scaleParams: $scaleParams,
       settings: $settings,
     };
-    const encodedState = jsoun.encode(state);
 
     const names = state.scaleParams.params.map((scale) => scale.name);
 
-    const scaleJson = $scales.reduce((pacc, p, i) => {
-      const scale = p.reduce((acc, s) => {
-        return { ...acc, [s.id]: s.hex };
-      }, {});
-      //return { ...pacc, [`color-${i + 1}`]: scale };
-      return { ...pacc, [`color-${names[i]}`]: scale };
-    }, {});
+    const scaleJson = groupScalesByName($scales, names);
 
     const scaleSVG = jsonToSvg(scaleJson);
 
     return {
-      url: `${getBaseUrl()}#${encodedState}`,
+      url: getStatefulUrl(state),
       json: JSON.stringify(scaleJson, null, 2),
       svg: scaleSVG,
     };

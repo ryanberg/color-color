@@ -77,7 +77,7 @@
         on:submit="{(e) => {
           e.preventDefault();
         }}">
-        <ControlGroup title="Hex value" titleId="hex-value">
+        <ControlGroup title="Hex value" titleId="hex-value" noBorderTop>
           <TextField
             bind:value="{$hexToScale}"
             focusOnMount="{true}"
