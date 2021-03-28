@@ -25,14 +25,16 @@
       bind:value="{$scaleParams.params[current].hue.start}"
       min="{$config.limits.hue[0]}"
       max="{$config.limits.hue[1]}"
-      step="{$config.resolution}" />
+      step="{$config.resolution}"
+      variant="hue" />
     <RangeField
       id="hue-end"
       label="End"
       bind:value="{$scaleParams.params[current].hue.end}"
       min="{$config.limits.hue[0]}"
       max="{$config.limits.hue[1]}"
-      step="{$config.resolution}" />
+      step="{$config.resolution}"
+      variant="hue" />
 
     <EaseControl
       id="hue-ease"
