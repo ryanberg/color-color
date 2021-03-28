@@ -171,10 +171,19 @@ function createScaleParams() {
         let colorToName;
 
         if (typeof hex === "string") {
-          // New color from hex
-          if (hex.charAt(0) !== "#") {
-            hex = "#" + hex;
+          // Remove the hash if it exists
+          hex = hex.replace("#", "");
+
+          // Convert 3-character hex to 6-character
+          if (hex.length === 3) {
+            hex = hex
+              .split("")
+              .map((char) => char + char)
+              .join("");
           }
+
+          // Add the hash to the start of the hex value
+          hex = "#" + hex;
 
           const hsluvFromHex = hexToHsl(hex);
           hue = hsluvFromHex[0];
