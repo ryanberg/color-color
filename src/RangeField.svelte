@@ -23,7 +23,24 @@
     @apply h-2 m-0 w-full bg-gray-600 cursor-pointer;
   }
   .track--hue {
-    background: linear-gradient(
+    background: var(--track-hue-gradient);
+  }
+
+  input[type="range"]::-webkit-slider-runnable-track {
+    @apply track;
+  }
+
+  input[type="range"]::-moz-range-track {
+    @apply track;
+  }
+
+  input[type="range"]::-ms-track {
+    @apply track;
+    @apply text-transparent;
+  }
+
+  input[type="range"][variant="hue"] {
+    --track-hue-hsluv: linear-gradient(
       to right,
       rgb(234, 0, 100),
       rgb(214, 68, 0),
@@ -46,21 +63,48 @@
       rgb(226, 0, 149),
       rgb(234, 0, 100)
     );
-  }
 
-  input[type="range"]::-webkit-slider-runnable-track {
-    @apply track;
+    --track-hue-hsl: linear-gradient(
+      to right,
+      hsla(0, 100%, 50%, 1),
+      hsla(10, 100%, 50%, 1),
+      hsla(20, 100%, 50%, 1),
+      hsla(30, 100%, 50%, 1),
+      hsla(40, 100%, 50%, 1),
+      hsla(50, 100%, 50%, 1),
+      hsla(60, 100%, 50%, 1),
+      hsla(70, 100%, 50%, 1),
+      hsla(80, 100%, 50%, 1),
+      hsla(90, 100%, 50%, 1),
+      hsla(100, 100%, 50%, 1),
+      hsla(110, 100%, 50%, 1),
+      hsla(120, 100%, 50%, 1),
+      hsla(130, 100%, 50%, 1),
+      hsla(140, 100%, 50%, 1),
+      hsla(150, 100%, 50%, 1),
+      hsla(160, 100%, 50%, 1),
+      hsla(170, 100%, 50%, 1),
+      hsla(180, 100%, 50%, 1),
+      hsla(190, 100%, 50%, 1),
+      hsla(200, 100%, 50%, 1),
+      hsla(210, 100%, 50%, 1),
+      hsla(220, 100%, 50%, 1),
+      hsla(230, 100%, 50%, 1),
+      hsla(240, 100%, 50%, 1),
+      hsla(250, 100%, 50%, 1),
+      hsla(260, 100%, 50%, 1),
+      hsla(270, 100%, 50%, 1),
+      hsla(280, 100%, 50%, 1),
+      hsla(290, 100%, 50%, 1),
+      hsla(300, 100%, 50%, 1),
+      hsla(310, 100%, 50%, 1),
+      hsla(320, 100%, 50%, 1),
+      hsla(330, 100%, 50%, 1),
+      hsla(340, 100%, 50%, 1),
+      hsla(350, 100%, 50%, 1),
+      hsla(360, 100%, 50%, 1)
+    );
   }
-
-  input[type="range"]::-moz-range-track {
-    @apply track;
-  }
-
-  input[type="range"]::-ms-track {
-    @apply track;
-    @apply text-transparent;
-  }
-
   input[type="range"][variant="hue"]::-webkit-slider-runnable-track {
     @apply track--hue;
   }
@@ -134,10 +178,17 @@
 
   let shortValue = false;
 
-  $: style =
+  $: trackColor =
     variant === "hue"
-      ? `--thumb-color: ${hslToHex(value, 100, 50, settings.colorSpace)}`
+      ? `--track-hue-gradient: var(--track-hue-${$settings.colorSpace});`
       : "";
+
+  $: thumbColor =
+    variant === "hue"
+      ? `--thumb-color: ${hslToHex(value, 100, 50, $settings.colorSpace)};`
+      : "";
+
+  $: style = `${trackColor} ${thumbColor}`;
 
   $: shortValue = step === 1;
   $: valueText = shortValue ? value : value.toFixed(2);
