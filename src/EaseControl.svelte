@@ -3,7 +3,7 @@
     @apply pb-1;
   }
   .toggle {
-    @apply uppercase text-xs tracking-wide text-gray-700 no-underline;
+    @apply absolute right-0 uppercase text-xs tracking-wide text-gray-700 no-underline;
   }
 </style>
 
@@ -22,18 +22,23 @@
   let showCurve = !alias;
 </script>
 
-<SelectField id="{id}" label="{label}" bind:value>
-  <EaseSelectOptions value="{value}" />
-</SelectField>
+<div class="relative">
+  <SelectField id="{id}" label="{label}" bind:value>
+    <EaseSelectOptions value="{value}" />
+  </SelectField>
+
+  <a
+    class="toggle"
+    style="top: 12px"
+    href="#toggle-curve"
+    on:click|preventDefault="{() => (showCurve = !showCurve)}">{#if showCurve}
+      ↑ Hide
+    {:else}↓ Show{/if}
+    Curve</a>
+</div>
+
 {#if showCurve}
   <div class="editor">
     <CubicBezierEditor bind:params="{value}" />
   </div>
 {/if}
-<a
-  class="toggle"
-  href="#toggle-curve"
-  on:click|preventDefault="{() => (showCurve = !showCurve)}">{#if showCurve}
-    ↑ Hide
-  {:else}↓ Show{/if}
-  Curve</a>
